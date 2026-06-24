@@ -101,7 +101,7 @@ Weather data is retrieved dynamically using asynchronous JavaScript and rendered
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/weather-dashboard.git
+git clone https://github.com/Inba482/AeroWeather.git
 ```
 
 ### 2. Open the Project
