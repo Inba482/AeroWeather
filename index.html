@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AeroWeather - Premium Glassmorphic Weather Dashboard</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Elements for Glassmorphism Depth -->
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+
+    <div class="app-container">
+        <!-- HEADER -->
+        <header class="app-header">
+            <div class="logo">
+                <i class="fa-solid fa-cloud-sun-rain logo-icon animate-float"></i>
+                <h1>Aero<span>Weather</span></h1>
+            </div>
+            <button class="settings-btn" id="settingsBtn" title="API Settings" aria-label="Open API settings">
+                <i class="fa-solid fa-gear"></i>
+                <span class="settings-btn-text">API Key</span>
+            </button>
+        </header>
+
+        <!-- MAIN LAYOUT -->
+        <main class="main-layout">
+            <!-- LEFT COLUMN: SEARCH & HISTORY -->
+            <section class="control-panel glass-card">
+                <h2 class="sr-only">Search and Saved Locations</h2>
+                
+                <!-- Search Bar Container -->
+                <form id="searchForm" class="search-form">
+                    <div class="search-input-wrapper">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input 
+                            type="text" 
+                            id="cityInput" 
+                            placeholder="Search city (e.g. London, Tokyo)..." 
+                            autocomplete="off"
+                            required
+                        >
+                        <button type="button" id="clearInputBtn" class="clear-btn" aria-label="Clear input">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <button type="submit" class="submit-btn" id="searchSubmitBtn">
+                        <span class="btn-text">Search</span>
+                        <div class="spinner hidden" id="searchSpinner"></div>
+                    </button>
+                </form>
+
+                <!-- Search History / Saved Locations -->
+                <div class="history-container">
+                    <div class="history-header">
+                        <h3><i class="fa-solid fa-clock-rotate-left"></i> Recent Searches</h3>
+                        <button type="button" id="clearHistoryBtn" class="clear-history-btn" title="Clear all history">Clear</button>
+                    </div>
+                    <ul id="historyList" class="history-list">
+                        <!-- History items will be injected by JavaScript -->
+                        <li class="history-placeholder">No recent searches yet.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- RIGHT COLUMN: WEATHER PRESENTATION -->
+            <section class="weather-panel" id="weatherPanel">
+                <h2 class="sr-only">Current Weather Conditions</h2>
+                
+                <!-- Initial / Empty State Message -->
+                <div id="weatherPlaceholder" class="weather-placeholder-card glass-card fade-in">
+                    <div class="placeholder-content">
+                        <i class="fa-solid fa-cloud-sun placeholder-icon"></i>
+                        <h3>Welcome to AeroWeather</h3>
+                        <p>Search for a city to retrieve real-time weather analytics. Ensure your API Key is configured in the top-right settings.</p>
+                        <button class="primary-btn" id="placeholderSetupBtn">Configure API Key</button>
+                    </div>
+                </div>
+
+                <!-- Main Loading State -->
+                <div id="mainSpinner" class="main-spinner-container hidden">
+                    <div class="spinner-xl"></div>
+                    <p>Fetching weather intelligence...</p>
+                </div>
+
+                <!-- Error Display Container -->
+                <div id="errorCard" class="error-card glass-card hidden fade-in">
+                    <i class="fa-solid fa-triangle-exclamation error-icon animate-pulse"></i>
+                    <h3 id="errorTitle">Oops! Something went wrong</h3>
+                    <p id="errorMessage">Unable to fetch weather data. Please try again later.</p>
+                </div>
+
+                <!-- Main Weather Stats Card -->
+                <div id="weatherContent" class="weather-content hidden">
+                    <!-- Core Weather Summary -->
+                    <div class="weather-main-card glass-card fade-in">
+                        <div class="weather-header-info">
+                            <div class="location-details">
+                                <h3 id="cityName">London, GB</h3>
+                                <p id="currentDate">Tuesday, 24 June 2026</p>
+                            </div>
+                            <span class="weather-pill" id="weatherConditionPill">Rainy</span>
+                        </div>
+                        
+                        <div class="weather-temp-block">
+                            <div class="temp-display">
+                                <span id="tempValue">21</span><span class="temp-unit">°C</span>
+                            </div>
+                            <div class="weather-visual">
+                                <!-- Dynamic weather icon -->
+                                <img id="weatherIcon" src="" alt="Weather Icon" class="weather-icon-img animate-float">
+                            </div>
+                        </div>
+                        
+                        <p class="weather-description" id="weatherDesc">light intensity shower rain</p>
+                    </div>
+
+                    <!-- Grid of Detailed Secondary Metrics -->
+                    <div class="weather-details-grid">
+                        <!-- Humidity Card -->
+                        <div class="detail-card glass-card fade-in delay-1">
+                            <div class="detail-icon-box color-blue">
+                                <i class="fa-solid fa-droplet"></i>
+                            </div>
+                            <div class="detail-info">
+                                <span>Humidity</span>
+                                <strong id="humidityVal">68%</strong>
+                            </div>
+                        </div>
+
+                        <!-- Wind Speed Card -->
+                        <div class="detail-card glass-card fade-in delay-2">
+                            <div class="detail-icon-box color-green">
+                                <i class="fa-solid fa-wind"></i>
+                            </div>
+                            <div class="detail-info">
+                                <span>Wind Speed</span>
+                                <strong id="windSpeedVal">12.5 km/h</strong>
+                            </div>
+                        </div>
+
+                        <!-- Atmospheric Pressure Card -->
+                        <div class="detail-card glass-card fade-in delay-3">
+                            <div class="detail-icon-box color-purple">
+                                <i class="fa-solid fa-gauge-high"></i>
+                            </div>
+                            <div class="detail-info">
+                                <span>Pressure</span>
+                                <strong id="pressureVal">1013 hPa</strong>
+                            </div>
+                        </div>
+
+                        <!-- Visibility Card -->
+                        <div class="detail-card glass-card fade-in delay-4">
+                            <div class="detail-icon-box color-orange">
+                                <i class="fa-solid fa-eye"></i>
+                            </div>
+                            <div class="detail-info">
+                                <span>Visibility</span>
+                                <strong id="visibilityVal">10 km</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="app-footer">
+            <p>Designed with ❤️ using HTML5, CSS3, & Vanilla JavaScript. Powered by OpenWeatherMap API.</p>
+        </footer>
+    </div>
+
+    <!-- API SETTINGS MODAL -->
+    <div class="modal-overlay hidden" id="settingsModal">
+        <div class="modal-content glass-card animate-zoom">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-key"></i> OpenWeatherMap Configuration</h2>
+                <button class="modal-close" id="modalCloseBtn" aria-label="Close modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>To access real-time weather analytics, you must configure a valid <strong>OpenWeatherMap API Key</strong>. The key is securely cached in your local browser storage.</p>
+                
+                <ol class="api-instructions">
+                    <li>Create a free account or log in at <a href="https://openweathermap.org/" target="_blank" rel="noopener noreferrer">openweathermap.org <i class="fa-solid fa-up-right-from-square"></i></a>.</li>
+                    <li>Navigate to your API Keys page and generate/copy an <strong>API key</strong>.</li>
+                    <li>Paste your key below and click <strong>Save Configuration</strong>.</li>
+                </ol>
+
+                <form id="apiSettingsForm" class="settings-form">
+                    <div class="input-group">
+                        <label for="apiKeyInput">API Key (appid)</label>
+                        <div class="key-input-wrapper">
+                            <input 
+                                type="password" 
+                                id="apiKeyInput" 
+                                placeholder="Paste your API key here..." 
+                                required
+                            >
+                            <button type="button" id="toggleKeyVisibility" class="toggle-visibility-btn" aria-label="Toggle password visibility">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" id="modalCancelBtn">Cancel</button>
+                        <button type="submit" class="btn-primary">Save Configuration</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main JavaScript Application -->
+    <script src="script.js"></script>
+</body>
+</html>
